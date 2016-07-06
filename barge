@@ -1,0 +1,33 @@
+#!/bin/sh
+set -e
+
+PWD=$(pwd)
+
+DIR=$(pwd)
+while [ "${DIR}" != "/" -a ! -e "${DIR}/Vagrantfile" ]; do
+  cd ..
+  DIR=$(pwd)
+done
+SSH_CONFIG="${DIR}/.ssh_config"
+
+cd ${PWD}
+
+HOST=$1
+
+trap "rm -f '${SSH_CONFIG}'" ERR
+if [ ! -e "${SSH_CONFIG}" ]; then
+  vagrant ssh-config > "${SSH_CONFIG}"
+fi
+if test -z "${HOST}" || ! grep -q "^Host ${HOST}$" "${SSH_CONFIG}" 2>/dev/null; then
+  HOST=$(awk '/^Host/{print $2}' "${SSH_CONFIG}" 2>/dev/null | head -n 1)
+else
+  shift
+fi
+ssh -F "${SSH_CONFIG}" "${HOST}" exit
+trap "" ERR
+
+if [ $# -ne 0 ]; then
+  echo "$@" | ssh -F "${SSH_CONFIG}" "${HOST}" "bash -l"
+else
+  ssh -F "${SSH_CONFIG}" "${HOST}"
+fi

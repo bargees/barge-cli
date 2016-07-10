@@ -12,6 +12,11 @@ SSH_CONFIG="${DIR}/.ssh_config"
 
 cd ${PWD}
 
+if [ "$1" == "-t" ]; then
+  TTY="$1"
+  shift
+fi
+
 HOST=$1
 
 trap "rm -f '${SSH_CONFIG}'" ERR
@@ -29,7 +34,7 @@ trap "" ERR
 if [ $# -ne 0 ]; then
   cmd=("${@/#/\"}")
   cmd="${cmd[@]/%/\"}"
-  ssh -F "${SSH_CONFIG}" "${HOST}" bash -l -c "'${cmd}'"
+  ssh ${TTY} -F "${SSH_CONFIG}" "${HOST}" bash -l -c "'${cmd}'"
 else
   ssh -F "${SSH_CONFIG}" "${HOST}"
 fi

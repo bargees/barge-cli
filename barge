@@ -27,7 +27,9 @@ ssh -F "${SSH_CONFIG}" "${HOST}" exit
 trap "" ERR
 
 if [ $# -ne 0 ]; then
-  echo "$@" | ssh -F "${SSH_CONFIG}" "${HOST}" "bash -l"
+  cmd=("${@/#/\"}")
+  cmd="${cmd[@]/%/\"}"
+  ssh -F "${SSH_CONFIG}" "${HOST}" bash -l -c "'${cmd}'"
 else
   ssh -F "${SSH_CONFIG}" "${HOST}"
 fi

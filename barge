@@ -32,7 +32,8 @@ ssh -F "${SSH_CONFIG}" "${HOST}" exit
 trap "" ERR
 
 if [ $# -ne 0 ]; then
-  cmd=("${@/#/\"}")
+  cmd=("${@//\"/\\\"}")
+  cmd=("${cmd[@]/#/\"}")
   cmd="${cmd[@]/%/\"}"
   ssh ${TTY} -F "${SSH_CONFIG}" "${HOST}" bash -l -c "'${cmd}'"
 else

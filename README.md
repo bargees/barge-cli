@@ -2,12 +2,14 @@
 
 SSH helper for Vagrant to execute ssh much faster than `vagrant ssh`
 
-## Usage: barge `[vm-name]` `[command]`
+## Usage: barge `[-t]` `[vm-name]` `[command]`
 
-- `[vm-name]` is defined at `config.vm.define` line in Vagrantfile.  
+- `-t` will be passed as an SSH option to force pseudo-tty allocation.
+
+- `vm-name` is defined at `config.vm.define` line in Vagrantfile.  
 If it's omitted, it will use SSH config for the first VM in Vagrantfile.
 
-- If `[command]` is omitted, you will login to the VM instead of executing a command.
+- If `command` is omitted, you will login to the VM instead of executing a command.
 
 ## Equivalent commands
 

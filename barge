@@ -19,15 +19,20 @@ fi
 
 HOST=$1
 
-trap "rm -f '${SSH_CONFIG}'" ERR
 if [ ! -e "${SSH_CONFIG}" ]; then
-  vagrant ssh-config > "${SSH_CONFIG}"
+  vagrant ssh-config > "${SSH_CONFIG}" 2>/dev/null || true
+fi
+if [ ! -s "${SSH_CONFIG}" ]; then
+  rm -f "${SSH_CONFIG}"
+  echo "No VMs is running." >&2
+  exit 1
 fi
 if test -z "${HOST}" || ! grep -q "^Host ${HOST}$" "${SSH_CONFIG}" 2>/dev/null; then
   HOST=$(awk '/^Host/{print $2}' "${SSH_CONFIG}" 2>/dev/null | head -n 1)
 else
   shift
 fi
+trap "rm -f '${SSH_CONFIG}'; exit 1" ERR
 ssh -F "${SSH_CONFIG}" "${HOST}" exit
 trap "" ERR
 
